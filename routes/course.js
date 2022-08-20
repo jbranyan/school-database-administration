@@ -1,10 +1,10 @@
+'use strict'
 var express = require('express');
-const { authenticateUser } = require('../middleware/authenticate-user');
-var router = express.Router();
-var { Course } = require('../models').Course;
 const { asyncHandler } = require('../middleware/async-handler');
+var { Course } = require('../models').Course;
+const { authenticateUser } = require('../middleware/authenticate-user');
 
-
+var router = express.Router();
 
 /*/api/courses GET route that will return all courses including the User associated with 
 each course and a 200 HTTP status code.*/
@@ -12,7 +12,7 @@ each course and a 200 HTTP status code.*/
 
 router.get('/courses', 
   asyncHandler(async(req, res) => {
-    const course = await Courses.findAll();
+    const course = await Course.findAll();
     res.status(200);
   }));
 
@@ -24,7 +24,6 @@ router.get('/courses',
    asyncHandler(async(req, res) => {
     const course = await Course.findByPk(req.params.id);
     res.status(200);
-    
   }));
 
 //   A /api/courses POST route that will create a new course, 
@@ -36,8 +35,7 @@ router.get('/courses',
     asyncHandler(async(req, res) => {
     try {
         await Course.create(req.body);
-        res.location('/courses/:id');
-        res.status(201);
+        res.status(201).location(`/courses/${course.id}`).end();
     } catch (error){
         if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
             const errors = error.errors.map(err => err.message);
