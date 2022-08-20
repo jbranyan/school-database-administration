@@ -1,7 +1,7 @@
 var express = require('express');
 var { User } = require('../models').User;
 
-const { authenticateUser } = require('../middleware/authenticate-user.js');
+const { authenticateUser } = require('../middleware/authenticate-user');
 const router = express.Router();
 const { asyncHandler } = require('../middleware/async-handler');
 
