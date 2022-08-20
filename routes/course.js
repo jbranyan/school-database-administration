@@ -22,8 +22,14 @@ router.get('/courses',
 
   router.get('/courses/:id', 
    asyncHandler(async(req, res) => {
-    const course = await Course.findByPk(req.params.id);
-    res.status(200);
+    const course = await Course.findByPk(req.params.id, {
+      include: [{
+        model: models.User,
+        as: "User",
+      }
+    ],
+  });
+    res.status(200).json(course);
   }));
 
 //   A /api/courses POST route that will create a new course, 
