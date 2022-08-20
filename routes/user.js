@@ -1,25 +1,22 @@
 var express = require('express');
 var { User } = require('../models').User;
-const { authenticateUser } = require('./middleware/auth-user');
+
+const { authenticateUser } = require('../middleware/authenticate-user.js');
 const router = express.Router();
+const { asyncHandler } = require('../middleware/async-handler');
+
 
 // A /api/users GET route that will return all properties and 
 // values for the currently authenticated User along with a 
 // 200 HTTP status code.
 
-router.get('/api/users',
+router.get('/users',
   authenticateUser,
-  async function(req, res) {
+  asyncHandler(async(req, res) => {
   const user = await User.findAll();
+  console.log(user);
   res.status(200);
-    // res.json({
-    //   userId: User.userId,
-    //   firstName: User.firstName,
-    //   lastName: User.lastName,
-    //   emailAddress: User.emailAddress,
-    //   username: User.username
-    // });
-  });
+  }));
 
   // A /api/users POST route that will create a new user, set 
 // the Location header to "/", and return a 201 HTTP status 
@@ -33,7 +30,8 @@ router.get('/api/users',
 // emailAddress
 // password
 
-  router.post('/api/users', async function(req, res){
+  router.post('/users', 
+  asyncHandler(async(req, res) => {
     try{
       await User.create(req.body);
       res.location('/');
@@ -46,7 +44,7 @@ router.get('/api/users',
         throw error;
       }
     }
-  });
+  }));
 
   module.exports = router;
 

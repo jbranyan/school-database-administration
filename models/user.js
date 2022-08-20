@@ -11,42 +11,42 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true
     },
-    firstName : {
+    firstName: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
         notEmpty: {
-          msg: 'Please enter a value for Title',
+          msg: 'Please enter a value for Title'
         },
         notNull: {
-          msg: 'Please provide a value for Title',
-        },
-      },
+          msg: 'Please provide a value for Title'
+        }
+      }
     },
     lastName : {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
         notEmpty: {
-          msg: 'Please enter a value for Author',
+          msg: 'Please enter a value for Author'
         },
         notNull: {
-          msg: 'Please provide a value for Author',
-        },
-      },
+          msg: 'Please provide a value for Author'
+        }
+      }
     },
     emailAddress: {
       type: DataTypes.STRING,
       unique: {
-        msg: 'The email address entered already exists',
+        msg: 'The email address entered already exists'
       },
       allowNull: false,
       validate:{
         notNull: {
-          msg: 'An email address is required',
+          msg: 'An email address is required'
         },
         isEmail: {
-          msg: 'Please provide a valid email address',
+          msg: 'Please provide a valid email address'
         }
       }
     },
@@ -55,30 +55,15 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       validate: {
         notNull: {
-          msg: 'A password is required',
+          msg: 'A password is required'
         },
           notEmpty: {
-            msg: 'Please provide a password',
+            msg: 'Please provide a password'
           }
       },
       len: {
         args: [10, 30],
         msg: 'The password length should be between 10 and 30 characters'
-      },
-    },
-    confirmedPassword: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      set(val) {
-        if ( val === this.password ) {
-          const hashedPassword = bcrypt.hashSync(val, 10);
-          this.setDataValue('confirmedPassword', hashedPassword);
-        }
-      },
-      validate: {
-        notNull: {
-          msg: 'Passwords don\'t match'
-        }
       }
     }
   }, {});
