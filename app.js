@@ -15,11 +15,11 @@ const app = express();
 app.use(express.json());
 
 //Setup Sequelize
-// const Sequelize = require('sequelize');
-// const sequelize = new Sequelize({
-//   dialect: 'sqlite',
-//   storage: 'fsjstd-restapi.db'
-// });
+const Sequelize = require('sequelize');
+const sequelize = new Sequelize({
+  dialect: 'sqlite',
+  storage: 'fsjstd-restapi.db'
+});
 
 // setup morgan which gives us http request logging
 app.use(morgan('dev'));
