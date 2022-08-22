@@ -14,8 +14,9 @@ const router = express.Router();
 router.get('/users',
   authenticateUser,
   asyncHandler(async(req, res) => {
-  const user = req.currentUser;
-  res.status(200);
+    const user = req.currentUser;
+    res.status(200);
+
   }));
 
   // A /api/users POST route that will create a new user, set 
