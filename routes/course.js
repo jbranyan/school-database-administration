@@ -24,8 +24,7 @@ router.get('/courses',
    asyncHandler(async(req, res) => {
     const course = await Course.findByPk(req.params.id, {
       include: [{
-        model: models.User,
-        as: "User",
+        model: User
       }
     ],
   });
