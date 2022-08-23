@@ -2,7 +2,7 @@
 
 var express = require('express');
 const { asyncHandler } = require('../middleware/async-handler');
-var { User } = require('../models').User;
+var { User } = require('../models');
 const { authenticateUser } = require('../middleware/authenticate-user');
 
 const router = express.Router();
@@ -15,8 +15,7 @@ router.get('/users',
   authenticateUser,
   asyncHandler(async(req, res) => {
     const user = req.currentUser;
-    res.status(200);
-
+    res.status(200).json(user);
   }));
 
   // A /api/users POST route that will create a new user, set 

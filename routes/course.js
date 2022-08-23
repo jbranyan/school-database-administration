@@ -1,7 +1,7 @@
 'use strict'
 var express = require('express');
 const { asyncHandler } = require('../middleware/async-handler');
-var { Course } = require('../models').Course;
+var { Course, User } = require('../models');
 const { authenticateUser } = require('../middleware/authenticate-user');
 
 var router = express.Router();
@@ -12,8 +12,13 @@ each course and a 200 HTTP status code.*/
 
 router.get('/courses', 
   asyncHandler(async(req, res) => {
-    const course = await Course.findAll();
-    res.status(200);
+    const course = await Course.findAll({
+      include: [{
+        model: User
+      }
+    ],
+    });
+    res.status(200).json(course);
   }));
 
 //   A /api/courses/:id GET route that will return the corresponding 
@@ -39,7 +44,7 @@ router.get('/courses',
     authenticateUser,
     asyncHandler(async(req, res) => {
     try {
-        await Course.create(req.body);
+        const course = await Course.create(req.body);
         res.status(201).location(`/courses/${course.id}`).end();
     } catch (error){
         if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
@@ -58,8 +63,8 @@ router.get('/courses',
     authenticateUser,
     asyncHandler(async(req, res) => {
     let course;
-    course = await Course.findByPk(req.params.id);
     try{
+      course = await Course.findByPk(req.params.id);
         await course.update(req.body);
         res.status(204);
     } catch (error) {
@@ -80,9 +85,9 @@ router.get('/courses',
     const course = await Course.findByPk(req.params.id);
     try{
         await course.destroy();
-        res.status(204);
+        res.status(204).end();
     } catch (error){
-
+      throw error;
     }
   }));
 
