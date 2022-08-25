@@ -16,10 +16,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       validate: {
         notEmpty: {
-          msg: 'Please enter a value for Title'
+          msg: 'Please enter a first name'
         },
         notNull: {
-          msg: 'Please provide a value for Title'
+          msg: 'Please provide a first name'
         }
       }
     },
@@ -28,15 +28,16 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       validate: {
         notEmpty: {
-          msg: 'Please enter a value for Author'
+          msg: 'Please enter a last name'
         },
         notNull: {
-          msg: 'Please provide a value for Author'
+          msg: 'Please enter a last name'
         }
       }
     },
     emailAddress: {
       type: DataTypes.STRING,
+      isEmail: true,
       unique: {
         msg: 'The email address entered already exists'
       },
@@ -53,6 +54,10 @@ module.exports = (sequelize, DataTypes) => {
     password: {
       type: DataTypes.STRING,
       allowNull: false,
+      set(val){
+        const hashedPassword = bcrypt.hashSync(val, 10)
+        this.setDataValue('password', hashedPassword)
+      },
       validate: {
         notNull: {
           msg: 'A password is required'
