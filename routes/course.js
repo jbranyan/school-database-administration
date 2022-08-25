@@ -6,13 +6,15 @@ const { authenticateUser } = require('../middleware/authenticate-user');
 
 var router = express.Router();
 
-/*/api/courses GET route that will return all courses including the User associated with 
-each course and a 200 HTTP status code.*/
+/*GET route that will return all courses including the User associated with
+each course */
 
-
-router.get('/courses', 
+router.get('/courses',
   asyncHandler(async(req, res) => {
     const course = await Course.findAll({
+      attributes: {
+        exclude: ['createdAt', 'updatedAt']
+    },
       include: [{
         model: User
       }
@@ -21,13 +23,16 @@ router.get('/courses',
     res.status(200).json(course);
   }));
 
-//   A /api/courses/:id GET route that will return the corresponding 
-// course including the User associated with that course 
-// and a 200 HTTP status code.
+/*GET route that will return the corresponding
+ course including the User associated with that course
+*/
 
-  router.get('/courses/:id', 
+  router.get('/courses/:id',
    asyncHandler(async(req, res) => {
     const course = await Course.findByPk(req.params.id, {
+      attributes: {
+        exclude: ['createdAt', 'updatedAt']
+    },
       include: [{
         model: User
       }
@@ -36,24 +41,14 @@ router.get('/courses',
     res.status(200).json(course);
   }));
 
-//   A /api/courses POST route that will create a new course, 
-// set the Location header to the URI for the newly created course,
-//  and return a 201 HTTP status code and no content.
+/* POST route that will create a new course
+*/
 
   router.post('/courses/',
     authenticateUser,
     asyncHandler(async(req, res) => {
-    try {
-        const course = await Course.create(req.body);
-        res.status(201).location(`/courses/${course.id}`).end();
-    } catch (error){
-        if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
-            const errors = error.errors.map(err => err.message);
-            res.status(400).json({ errors });
-          } else {
-            throw error;
-          }
-    }
+      const course = await Course.create(req.body);
+      res.status(201).location(`/courses/${course.id}`).end();
   }));
 
 //   A /api/courses/:id PUT route that will update the corresponding course 
@@ -62,19 +57,22 @@ router.get('/courses',
   router.put('/courses/:id',
     authenticateUser,
     asyncHandler(async(req, res) => {
-    let course;
-    try{
-      course = await Course.findByPk(req.params.id);
+
+      const user = req.currentUser;
+      let message;
+
+      const course = await Course.findByPk(req.params.id);
+
+      if(course.userId === user.id){
         await course.update(req.body);
-        res.status(204);
-    } catch (error) {
-        if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
-        const errors = error.errors.map(err => err.message);
-        res.status(400).json({ errors });
-        } else {
-        throw error;
-        }
-    }
+        res.status(204).end();
+      } else {
+        message = 'User not authorized to update course';
+      }
+
+      if(message){
+        res.status(403).json({errors: message}).end();
+      }
   }));
 
   /*A /api/courses/:id DELETE route that will delete the corresponding course 
@@ -82,13 +80,21 @@ router.get('/courses',
   router.delete('/courses/:id',
   authenticateUser,
     asyncHandler(async(req, res) => {
-    const course = await Course.findByPk(req.params.id);
-    try{
+    const user = req.currentUser;
+    let message;
+
+    let course = await Course.findByPk(req.params.id);
+
+      if(course.userId === user.id){
         await course.destroy();
         res.status(204).end();
-    } catch (error){
-      throw error;
-    }
+      } else {
+        message = 'User not authorized to delete course';
+      }
+
+      if(message){
+        res.status(403).json({errors: message}).end();
+      }
   }));
 
   module.exports = router;
