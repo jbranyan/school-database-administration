@@ -62,12 +62,15 @@ router.get('/courses',
       let message;
 
       const course = await Course.findByPk(req.params.id);
-
-      if(course.userId === user.id){
-        await course.update(req.body);
-        res.status(204).end();
+      if(course){
+        if(course.userId === user.id){
+          await course.update(req.body);
+          res.status(204).end();
+        } else {
+          message = 'User not authorized to update course';
+        }
       } else {
-        message = 'User not authorized to update course';
+        message = 'Course not found';
       }
 
       if(message){
@@ -84,17 +87,20 @@ router.get('/courses',
     let message;
 
     let course = await Course.findByPk(req.params.id);
-
+    if(course){
       if(course.userId === user.id){
         await course.destroy();
         res.status(204).end();
       } else {
         message = 'User not authorized to delete course';
       }
+    } else {
+      message = 'Course not found';
+    }
 
-      if(message){
-        res.status(403).json({errors: message}).end();
-      }
+    if(message){
+      res.status(403).json({errors: message}).end();
+    }
   }));
 
   module.exports = router;
