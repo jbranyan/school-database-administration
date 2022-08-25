@@ -16,7 +16,10 @@ router.get('/courses',
         exclude: ['createdAt', 'updatedAt']
     },
       include: [{
-        model: User
+        model: User,
+        attributes: {
+          exclude: ['createdAt', 'updatedAt', 'password', 'id']
+      },
       }
     ],
     });
@@ -34,7 +37,10 @@ router.get('/courses',
         exclude: ['createdAt', 'updatedAt']
     },
       include: [{
-        model: User
+        model: User,
+          attributes: {
+            exclude: ['createdAt', 'updatedAt', 'password', 'id']
+        },
       }
     ],
   });
